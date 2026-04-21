@@ -26,6 +26,8 @@ class GameActivity : AppCompatActivity(), SensorEventListener {
 
     private lateinit var sensorManager: SensorManager
     private var accelerometer: Sensor? = null
+    private var lightSensor: Sensor? = null
+
     private lateinit var gameView: GameView
     private lateinit var layoutPauseMenu: ConstraintLayout
     private lateinit var btnPause: ImageButton
@@ -45,7 +47,6 @@ class GameActivity : AppCompatActivity(), SensorEventListener {
     private val alpha = 0.15f
     private var ultimoTempoTacada: Long = 0
     private val COOLDOWN_MS = 1500
-
     private var capturandoAbanao = false
     private var tempoInicioAbanao = 0L
     private var forcaMaximaCapturada = 0f
@@ -75,34 +76,56 @@ class GameActivity : AppCompatActivity(), SensorEventListener {
 
         sensorManager = getSystemService(Context.SENSOR_SERVICE) as SensorManager
         accelerometer = sensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER)
+        lightSensor = sensorManager.getDefaultSensor(Sensor.TYPE_LIGHT)
 
         gameView.onGameOver = { pontuacaoFinal -> mostrarEcraGameOver(pontuacaoFinal) }
 
-        // Tocar som quando houver tacada
+        // Só toca som se o jogo não estiver pausado
         gameView.onShotFired = {
-            soundPool.play(soundIdShot, volumeFX, volumeFX, 1, 0, 1f)
+            if (!gameView.isPaused()) {
+                soundPool.play(soundIdShot, volumeFX, volumeFX, 1, 0, 1f)
+            }
         }
     }
 
     private fun inicializarAudio() {
-        // 1. Música de Fundo
         mediaPlayer = MediaPlayer.create(this, R.raw.bg_music)
         mediaPlayer?.isLooping = true
         mediaPlayer?.setVolume(volumeMusica, volumeMusica)
         mediaPlayer?.start()
 
-        // 2. Efeitos de Som (SoundPool)
         val audioAttributes = AudioAttributes.Builder()
             .setUsage(AudioAttributes.USAGE_GAME)
             .setContentType(AudioAttributes.CONTENT_TYPE_SONIFICATION)
             .build()
 
-        soundPool = SoundPool.Builder()
-            .setMaxStreams(5)
-            .setAudioAttributes(audioAttributes)
-            .build()
-
+        soundPool = SoundPool.Builder().setMaxStreams(5).setAudioAttributes(audioAttributes).build()
         soundIdShot = soundPool.load(this, R.raw.shot_fx, 1)
+    }
+
+    // --- LÓGICA DE PAUSA (ÁUDIO + VISUAL) ---
+    private fun abrirMenuPausa() {
+        if (!gameView.isPaused()) {
+            gameView.pause()
+
+            // Pausar Áudio
+            mediaPlayer?.pause()
+            soundPool.autoPause() // Para qualquer efeito sonoro a decorrer
+
+            layoutPauseMenu.visibility = View.VISIBLE
+            btnPause.visibility = View.GONE
+        }
+    }
+
+    private fun retomarJogo() {
+        gameView.resume()
+
+        // Retomar Áudio
+        mediaPlayer?.start()
+        soundPool.autoResume()
+
+        layoutPauseMenu.visibility = View.GONE
+        btnPause.visibility = View.VISIBLE
     }
 
     private fun setupPauseMenu() {
@@ -112,32 +135,20 @@ class GameActivity : AppCompatActivity(), SensorEventListener {
         val sbFX = findViewById<SeekBar>(R.id.sbFX)
         val sbMusic = findViewById<SeekBar>(R.id.sbMusic)
 
-        // Configurar volumes iniciais nos Sliders
         sbMusic.progress = (volumeMusica * 100).toInt()
         sbFX.progress = (volumeFX * 100).toInt()
 
-        btnPause.setOnClickListener {
-            gameView.pause()
-            layoutPauseMenu.visibility = View.VISIBLE
-            btnPause.visibility = View.GONE
-        }
+        btnPause.setOnClickListener { abrirMenuPausa() }
 
-        btnContinue.setOnClickListener {
-            gameView.resume()
-            layoutPauseMenu.visibility = View.GONE
-            btnPause.visibility = View.VISIBLE
-        }
+        btnContinue.setOnClickListener { retomarJogo() }
 
         btnReset.setOnClickListener {
             gameView.resetarJogoCompleto()
-            gameView.resume()
-            layoutPauseMenu.visibility = View.GONE
-            btnPause.visibility = View.VISIBLE
+            retomarJogo()
         }
 
         btnExit.setOnClickListener { finish() }
 
-        // --- LISTENERS DOS SLIDERS ---
         sbMusic.setOnSeekBarChangeListener(object : SeekBar.OnSeekBarChangeListener {
             override fun onProgressChanged(s: SeekBar?, p: Int, b: Boolean) {
                 volumeMusica = p / 100f
@@ -148,9 +159,7 @@ class GameActivity : AppCompatActivity(), SensorEventListener {
         })
 
         sbFX.setOnSeekBarChangeListener(object : SeekBar.OnSeekBarChangeListener {
-            override fun onProgressChanged(s: SeekBar?, p: Int, b: Boolean) {
-                volumeFX = p / 100f
-            }
+            override fun onProgressChanged(s: SeekBar?, p: Int, b: Boolean) { volumeFX = p / 100f }
             override fun onStartTrackingTouch(s: SeekBar?) {}
             override fun onStopTrackingTouch(s: SeekBar?) {}
         })
@@ -159,42 +168,46 @@ class GameActivity : AppCompatActivity(), SensorEventListener {
     private fun setupGameOverMenu() {
         val btnJogarNovamente = findViewById<Button>(R.id.btnJogarNovamente)
         val btnSairGameOver = findViewById<Button>(R.id.btnSairGameOver)
-
         btnJogarNovamente.setOnClickListener {
             layoutGameOverMenu.visibility = View.GONE
             btnPause.visibility = View.VISIBLE
             gameView.resetarJogoCompleto()
+            // Retomar áudio caso tenha parado no Game Over
+            mediaPlayer?.start()
             gameView.resume()
         }
-
         btnSairGameOver.setOnClickListener { finish() }
     }
 
     private fun mostrarEcraGameOver(pontuacaoFinal: Int) {
         gameView.pause()
+        mediaPlayer?.pause() // Opcional: pausar música no fim do curso
+
         btnPause.visibility = View.GONE
         val melhorPontuacaoAtual = sharedPreferences.getInt("melhor_pontuacao", 0)
-
         if (pontuacaoFinal > melhorPontuacaoAtual) {
             sharedPreferences.edit().putInt("melhor_pontuacao", pontuacaoFinal).apply()
             tvMelhorPontuacaoLabel.text = "NOVO RECORDE!"
         } else {
             tvMelhorPontuacaoLabel.text = "Melhor Pontuação: $melhorPontuacaoAtual"
         }
-
         tvPontuacaoFinalValor.text = pontuacaoFinal.toString()
         runOnUiThread { layoutGameOverMenu.visibility = View.VISIBLE }
     }
 
     override fun onResume() {
         super.onResume()
-        mediaPlayer?.start() // Retoma a música ao voltar para a app
+        // Se não estiver no menu de pausa, retoma a música ao voltar para a app
+        if (layoutPauseMenu.visibility != View.VISIBLE) {
+            mediaPlayer?.start()
+        }
         accelerometer?.let { sensorManager.registerListener(this, it, SensorManager.SENSOR_DELAY_GAME) }
+        lightSensor?.let { sensorManager.registerListener(this, it, SensorManager.SENSOR_DELAY_NORMAL) }
     }
 
     override fun onPause() {
         super.onPause()
-        mediaPlayer?.pause() // Pausa a música se sair da app ou receber chamada
+        mediaPlayer?.pause()
         sensorManager.unregisterListener(this)
     }
 
@@ -205,6 +218,13 @@ class GameActivity : AppCompatActivity(), SensorEventListener {
     }
 
     override fun onSensorChanged(event: SensorEvent?) {
+        if (event?.sensor?.type == Sensor.TYPE_LIGHT) {
+            val lux = event.values[0]
+            if (lux < 5.0f) {
+                runOnUiThread { abrirMenuPausa() }
+            }
+        }
+
         if (event?.sensor?.type == Sensor.TYPE_ACCELEROMETER) {
             val y = event.values[1]
             val aceleracaoBruta = sqrt((event.values[0] * event.values[0] + y * y + event.values[2] * event.values[2]).toDouble()).toFloat()
@@ -217,7 +237,6 @@ class GameActivity : AppCompatActivity(), SensorEventListener {
 
             if (gameView.isProntaParaTacada()) {
                 val tempoAtual = System.currentTimeMillis()
-
                 if (!capturandoAbanao) {
                     forcaSuave = (aceleracaoBruta * alpha) + (forcaSuave * (1 - alpha))
                     if (aceleracaoBruta > 16.0f && (tempoAtual - ultimoTempoTacada) > COOLDOWN_MS) {

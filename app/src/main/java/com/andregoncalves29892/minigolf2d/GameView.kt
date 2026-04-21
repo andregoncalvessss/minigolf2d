@@ -30,7 +30,6 @@ class GameView(context: Context, attrs: AttributeSet? = null) : View(context, at
 
     private val paintBarraFundo = Paint().apply { color = Color.parseColor("#44000000") }
     private val paintBarraVermelha = Paint().apply { color = Color.RED }
-    private val paintTextoUI = Paint().apply { color = Color.WHITE; typeface = Typeface.create("sans-serif-condensed", Typeface.BOLD); isAntiAlias = true }
     private val paintTextoTerra = Paint().apply { color = Color.parseColor("#60FFFFFF"); typeface = Typeface.create("sans-serif-medium", Typeface.NORMAL); textAlign = Paint.Align.CENTER; isAntiAlias = true }
 
     private val paintTextoAbana = Paint().apply { color = Color.WHITE; typeface = Typeface.create("sans-serif-black", Typeface.BOLD); textAlign = Paint.Align.CENTER; isAntiAlias = true }
@@ -49,7 +48,6 @@ class GameView(context: Context, attrs: AttributeSet? = null) : View(context, at
     private var pontuacao = 100
     private var nivelAtual = 1
 
-    // Callbacks para a Activity
     var onGameOver: ((Int) -> Unit)? = null
     var onShotFired: (() -> Unit)? = null
 
@@ -87,7 +85,6 @@ class GameView(context: Context, attrs: AttributeSet? = null) : View(context, at
                         bolaX += (buracoX - bolaX) * 0.15f
                         bolaY += ((buracoY + 5f) - bolaY) * 0.15f
                         if (raioBola > 0.5f) raioBola *= 0.85f
-
                         if (System.currentTimeMillis() - tempoMensagem > 2500) {
                             if (nivelAtual >= 5) {
                                 estadoAtual = EstadoJogo.FIM_JOGO
@@ -100,7 +97,7 @@ class GameView(context: Context, attrs: AttributeSet? = null) : View(context, at
                         }
                     }
                     EstadoJogo.FORA_LIMITES -> if (System.currentTimeMillis() - tempoMensagem > 2500) resetarPartida()
-                    EstadoJogo.FIM_JOGO -> { /* Aguarda interação no menu final */ }
+                    EstadoJogo.FIM_JOGO -> {}
                 }
             }
             invalidate()
@@ -111,6 +108,7 @@ class GameView(context: Context, attrs: AttributeSet? = null) : View(context, at
     override fun onAttachedToWindow() { super.onAttachedToWindow(); handler?.post(loop) }
     fun pause() { isPaused = true }
     fun resume() { isPaused = false }
+    fun isPaused() = isPaused
     fun resetar() { pontuacao = 100; resetarPartida() }
 
     fun resetarJogoCompleto() {
@@ -149,22 +147,14 @@ class GameView(context: Context, attrs: AttributeSet? = null) : View(context, at
                 corTerraTopo = Color.parseColor("#212121"); corTerraBase = Color.parseColor("#000000")
                 corRelva = Color.parseColor("#39FF14"); atritoRelva = 0.94f
                 startXRatio = 0.15f; buracoXRatio = 0.85f
-                mapaRatios = listOf(
-                    PointF(-0.1f, 0.6f), PointF(0.42f, 0.6f),
-                    PointF(0.43f, 3.0f), PointF(0.57f, 3.0f),
-                    PointF(0.58f, 0.6f), PointF(1.1f, 0.6f)
-                )
+                mapaRatios = listOf(PointF(-0.1f, 0.6f), PointF(0.42f, 0.6f), PointF(0.43f, 3.0f), PointF(0.57f, 3.0f), PointF(0.58f, 0.6f), PointF(1.1f, 0.6f))
             }
             5 -> {
                 corCeuTopo = Color.parseColor("#8B0000"); corCeuBase = Color.parseColor("#3E0000")
                 corTerraTopo = Color.parseColor("#111111"); corTerraBase = Color.parseColor("#000000")
                 corRelva = Color.parseColor("#FF4500"); atritoRelva = 0.94f
                 startXRatio = 0.15f; buracoXRatio = 0.85f
-                mapaRatios = listOf(
-                    PointF(-0.1f, 0.5f), PointF(0.2f, 0.9f), PointF(0.65f, 0.9f),
-                    PointF(0.82f, 0.3f), PointF(0.88f, 0.3f),
-                    PointF(1.05f, 0.9f), PointF(1.2f, 0.9f)
-                )
+                mapaRatios = listOf(PointF(-0.1f, 0.5f), PointF(0.2f, 0.9f), PointF(0.65f, 0.9f), PointF(0.82f, 0.3f), PointF(0.88f, 0.3f), PointF(1.05f, 0.9f), PointF(1.2f, 0.9f))
             }
             else -> { nivelAtual = 1; carregarDadosDoNivel(1) }
         }
@@ -206,7 +196,9 @@ class GameView(context: Context, attrs: AttributeSet? = null) : View(context, at
         if(estadoAtual != EstadoJogo.FIM_JOGO) {
             canvas.drawText("PONTOS: $pontuacao", 40f, 80f, paintPontuacao)
             canvas.drawText("NÍVEL $nivelAtual", 40f, 80f + paintPontuacao.textSize * 1.1f, paintPontuacao)
-            canvas.drawText("Inclina para controlar a bola!", w / 2f, h * 0.94f, paintTextoTerra)
+
+            // NOVO TEXTO: Instrução do Sensor de Luminosidade
+            canvas.drawText("Encosta o dedo ao sensor de luminosidade para pausar", w / 2f, h * 0.94f, paintTextoTerra)
         }
 
         if (estadoAtual == EstadoJogo.MIRA || estadoAtual == EstadoJogo.CONTAGEM) {
@@ -252,7 +244,7 @@ class GameView(context: Context, attrs: AttributeSet? = null) : View(context, at
     }
 
     private fun configurarPincéis(escala: Float, h: Float) {
-        paintRelva.strokeWidth = escala * 0.015f; paintTextoUI.textSize = escala * 0.05f; paintTextoTerra.textSize = escala * 0.045f;
+        paintRelva.strokeWidth = escala * 0.015f; paintTextoTerra.textSize = escala * 0.035f; // Texto um pouco menor para caber melhor
         paintTextoAbana.textSize = escala * 0.05f; paintTextoAbanaContorno.textSize = escala * 0.05f; paintAura.strokeWidth = escala * 0.01f; gravidade = h * 0.0010f; paintPontuacao.textSize = escala * 0.06f
     }
 
@@ -341,6 +333,6 @@ class GameView(context: Context, attrs: AttributeSet? = null) : View(context, at
     private fun efetuarDisparoFinal() {
         val mult = ((forcaGuardada - 9.8f).coerceAtLeast(0f) / 20f).coerceIn(0.1f, 1.0f)
         velX = (dirXNormalizada * FORCA_MAXIMA * mult) * (width / 1000f); velY = (dirYNormalizada * FORCA_MAXIMA * mult) * (height / 1500f); estadoAtual = EstadoJogo.A_ROLAR
-        onShotFired?.invoke() // Gatilho para o som da tacada na Activity
+        onShotFired?.invoke()
     }
 }
