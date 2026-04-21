@@ -1,0 +1,126 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/main"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <ImageView
+        android:id="@+id/ivBackground"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:src="@drawable/bg_golf_menu"
+        android:scaleType="centerCrop"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <androidx.constraintlayout.widget.Guideline android:id="@+id/guideline_h45" android:layout_width="wrap_content" android:layout_height="wrap_content" android:orientation="horizontal" app:layout_constraintGuide_percent="0.45" />
+    <TextView android:id="@+id/tvTituloMain" android:layout_width="0dp" android:layout_height="0dp" android:layout_marginTop="24dp" android:fontFamily="@font/space_grotesk_bold" android:gravity="center" android:includeFontPadding="false" android:text="@string/titulo_app" android:textAllCaps="true" android:textColor="#534439" app:autoSizeMaxTextSize="120sp" app:autoSizeMinTextSize="24sp" app:autoSizeTextType="uniform" app:layout_constraintBottom_toTopOf="@+id/guideline_h45" app:layout_constraintEnd_toEndOf="parent" app:layout_constraintStart_toStartOf="parent" app:layout_constraintTop_toTopOf="parent" app:layout_constraintWidth_percent="0.6" />
+    <TextView android:id="@+id/tvCurso" android:layout_width="wrap_content" android:layout_height="wrap_content" android:fontFamily="@font/space_grotesk_bold" android:letterSpacing="0.1" android:text="@string/nome_curso" android:textAllCaps="true" android:textColor="#534439" android:textSize="12sp" app:layout_constraintBottom_toTopOf="@+id/tvTituloMain" app:layout_constraintEnd_toEndOf="parent" app:layout_constraintStart_toStartOf="parent" />
+
+    <androidx.constraintlayout.widget.ConstraintLayout android:id="@+id/btnJogarCustom" android:layout_width="0dp" android:layout_height="0dp" android:layout_marginEnd="12dp" android:background="@drawable/bg_botao_jogar" android:clickable="true" android:elevation="4dp" android:focusable="true" app:layout_constraintBottom_toBottomOf="parent" app:layout_constraintDimensionRatio="2:1" app:layout_constraintEnd_toStartOf="@+id/btnInstrucoesCustom" app:layout_constraintHorizontal_chainStyle="packed" app:layout_constraintStart_toStartOf="parent" app:layout_constraintTop_toBottomOf="@+id/guideline_h45" app:layout_constraintWidth_percent="0.35">
+        <ImageView android:layout_width="32dp" android:layout_height="32dp" android:layout_marginTop="8dp" android:layout_marginEnd="8dp" android:alpha="0.4" android:src="@drawable/ic_play" app:layout_constraintEnd_toEndOf="parent" app:layout_constraintTop_toTopOf="parent" />
+        <TextView android:id="@+id/tvJogarTitle" android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginStart="16dp" android:fontFamily="@font/space_grotesk_bold" android:text="@string/jogar" android:textAllCaps="true" android:textColor="#FFFFFF" android:textSize="20sp" app:layout_constraintBottom_toTopOf="@+id/tvJogarSub" app:layout_constraintStart_toStartOf="parent" />
+        <TextView android:id="@+id/tvJogarSub" android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginStart="16dp" android:layout_marginBottom="12dp" android:alpha="0.8" android:fontFamily="@font/plus_jakarta_sans_medium" android:text="@string/diverte_te" android:textAllCaps="true" android:textColor="#FFFFFF" android:textSize="10sp" app:layout_constraintBottom_toBottomOf="parent" app:layout_constraintStart_toStartOf="parent" />
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+    <androidx.constraintlayout.widget.ConstraintLayout android:id="@+id/btnInstrucoesCustom" android:layout_width="0dp" android:layout_height="0dp" android:layout_marginStart="12dp" android:background="@drawable/bg_botao_instrucoes" android:clickable="true" android:elevation="4dp" android:focusable="true" app:layout_constraintBottom_toBottomOf="parent" app:layout_constraintDimensionRatio="2:1" app:layout_constraintEnd_toEndOf="parent" app:layout_constraintStart_toEndOf="@+id/btnJogarCustom" app:layout_constraintTop_toBottomOf="@+id/guideline_h45" app:layout_constraintWidth_percent="0.35">
+        <ImageView android:layout_width="32dp" android:layout_height="32dp" android:layout_marginTop="8dp" android:layout_marginEnd="8dp" android:alpha="0.4" android:src="@drawable/ic_book" app:layout_constraintEnd_toEndOf="parent" app:layout_constraintTop_toTopOf="parent" />
+        <TextView android:id="@+id/tvInstTitle" android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginStart="16dp" android:fontFamily="@font/space_grotesk_bold" android:text="@string/instrucoes" android:textAllCaps="true" android:textColor="#FFFFFF" android:textSize="20sp" app:layout_constraintBottom_toTopOf="@+id/tvInstSub" app:layout_constraintStart_toStartOf="parent" />
+        <TextView android:id="@+id/tvInstSub" android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginStart="16dp" android:layout_marginBottom="12dp" android:alpha="0.8" android:fontFamily="@font/plus_jakarta_sans_medium" android:text="@string/aprende_basicos" android:textAllCaps="true" android:textColor="#FFFFFF" android:textSize="10sp" app:layout_constraintBottom_toBottomOf="parent" app:layout_constraintStart_toStartOf="parent" />
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/layoutInstrucoes"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="#AA000000"
+        android:elevation="20dp"
+        android:clickable="true"
+        android:focusable="true"
+        android:visibility="gone">
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/cardInstrucoes"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:background="@drawable/bg_instrucoes_card"
+            android:padding="24dp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintWidth_percent="0.75">
+
+            <ImageButton
+                android:id="@+id/btnFecharInstrucoes"
+                android:layout_width="48dp"
+                android:layout_height="48dp"
+                android:background="?attr/selectableItemBackgroundBorderless"
+                android:src="@android:drawable/ic_menu_close_clear_cancel"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                android:tint="#333333" />
+
+            <TextView
+                android:id="@+id/tvInstrucoesTitle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Como Jogar"
+                android:textColor="#944A00"
+                android:textSize="24sp"
+                android:textStyle="bold"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <View
+                android:id="@+id/separator"
+                android:layout_width="50dp"
+                android:layout_height="3dp"
+                android:layout_marginTop="4dp"
+                android:background="#944A00"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/tvInstrucoesTitle" />
+
+            <ScrollView
+                android:id="@+id/scrollViewInst"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
+                app:layout_constrainedHeight="true"
+                app:layout_constraintHeight_max="250dp"
+                app:layout_constraintTop_toBottomOf="@id/separator"
+                app:layout_constraintBottom_toTopOf="@+id/tvFooter">
+
+                <TextView
+                    android:id="@+id/tvInstrucoesTexto"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:lineSpacingExtra="6dp"
+                    android:paddingBottom="16dp"
+                    android:text="1. MIRA: Desliza o dedo no ecrã para apontar a direção da bola.\n\n2. FORÇA: Abana o telemóvel com energia! Quanto mais forte abanares, maior será a força da tacada.\n\n3. TACADA: Após o abanão, a contagem começa. A bola sai disparada quando aparecer 'FOGO!'.\n\n4. CONTROLO: Enquanto a bola rola, inclina o telemóvel para a esquerda ou direita para ajustar ligeiramente a trajetória e evitar obstáculos."
+                    android:textColor="#444444"
+                    android:textSize="14sp"
+                    android:fontFamily="sans-serif-medium" />
+            </ScrollView>
+
+            <TextView
+                android:id="@+id/tvFooter"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="12dp"
+                android:text="Diverte-te e boa sorte!"
+                android:textColor="#7CB342"
+                android:textStyle="italic"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/scrollViewInst" />
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+</androidx.constraintlayout.widget.ConstraintLayout>

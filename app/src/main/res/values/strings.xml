@@ -1,0 +1,16 @@
+<resources>
+    <string name="app_name">MiniGolf2D</string>
+    <string name="nome_curso">ENGENHARIA DA COMPUTAÇÃO GRÁFICA E MULTIMÉDIA</string>
+    <string name="titulo_2d">2D </string>
+    <string name="titulo_golf">GOLF</string>
+    <string name="jogar">JOGAR</string>
+    <string name="diverte_te">DIVERTE-TE!</string>
+    <string name="instrucoes">INSTRUÇÕES</string>
+    <string name="aprende_basicos">APRENDE OS BÁSICOS</string>
+
+    <string name="desc_icone_play">Ícone de Play</string>
+    <string name="desc_icone_livro">Ícone de Livro</string>
+    <string name="nivel_01">Nível 01</string>
+    <string name="texto_forca">Abana o telemóvel para detetar a força!</string>
+    <string name="titulo_app">2D GOLF</string>
+</resources>
